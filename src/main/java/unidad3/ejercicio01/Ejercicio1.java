@@ -26,10 +26,11 @@ public class Ejercicio1 {
 		}
 	}
 	
+	private static int n = 1;
+	
 	static void download(URL url) throws IOException {
-		int n = 1;
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		String path = System.getProperty("user.home") + "/Pictures/" + FilenameUtils.getName(url.getPath());
+		String path = System.getProperty("user.home") + "/Imágenes/" + FilenameUtils.getName(url.getPath());
 		if (FilenameUtils.getExtension(path).isEmpty())
 			path += "." + con.getContentType().split("/")[1];
 		File file = new File(path);
@@ -37,12 +38,14 @@ public class Ejercicio1 {
 			file = new File(FilenameUtils.getFullPath(path) + FilenameUtils.getBaseName(path) + (n++) + "." + FilenameUtils.getExtension(path));
 		System.out.printf("Descargando: %s\n", url.toString());
 		System.out.printf("         en: %s\n", file.toString());
-		System.out.printf("      desde: %s\n", con.getContentType());
 		try (
 			BufferedInputStream in = new BufferedInputStream(con.getInputStream());
 			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		){
-			out.write(in.readAllBytes());
+			byte [] buffer = new byte[1024];
+			int bytes;
+			while ((bytes = in.read(buffer)) != -1)
+				out.write(buffer, 0, bytes);
 		}
 	}	
 }
