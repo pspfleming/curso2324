@@ -30,7 +30,7 @@ public class Ejercicio1 {
 	
 	static void download(URL url) throws IOException {
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		String path = System.getProperty("user.home") + "/Imágenes/" + FilenameUtils.getName(url.getPath());
+		String path = System.getProperty("user.home") + "/Pictures/" + FilenameUtils.getName(url.getPath());
 		if (FilenameUtils.getExtension(path).isEmpty())
 			path += "." + con.getContentType().split("/")[1];
 		File file = new File(path);
