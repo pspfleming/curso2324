@@ -8,8 +8,7 @@ public class Main {
 			c.inc();
 			try {
 				Thread.sleep(10);
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) {}
 		}
 	}
 
@@ -20,7 +19,28 @@ public class Main {
 		t2.start();
 		t1.join();
 		t2.join();
-		System.out.println("Contador = " + c.get());
+		System.out.println("Contador = " + c.n);
+	}
+	
+	private static class Contador {
+		public Integer n;
+
+		public Contador(int n) {
+			this.n = n;
+		}
+
+		public void inc() {
+			synchronized (n) {
+				if (n == 50)
+					try {
+						wait();
+					} catch (InterruptedException e) {}
+				else if (n > 200)
+					notify();
+				n++;
+			}
+		}
+
 	}
 
 }
