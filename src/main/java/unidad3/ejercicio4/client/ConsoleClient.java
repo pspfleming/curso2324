@@ -14,14 +14,18 @@ public class ConsoleClient {
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		Pattern regex = Pattern.compile("(.+?)\\s*([+-\u00d7\u00f7\u221A])\\s*(.+)");
-		System.err.println("(.+?)\\s*([+-\u00d7\u00f7\u221A])\\s*(.+)");
+		Pattern regex = Pattern.compile("^(\\d+(?:\\.\\d+)?)\\s*([+-\u00d7\u00f7])\\s*(\\d+(?:\\.\\d+)?)$|^(\\d+(?:\\.\\d+)?)\\s*(\u221A$)$");
 		String linea;
-		System.out.print("> ");
-		while ((linea = in.readLine()) != null) {
+		System.out.print("+-\u00d7\u00f7\u221A> ");
+		while ((linea = in.readLine().trim()) != null) {
 			Matcher m = regex.matcher(linea);
 			if (m.matches()) {
-				enviar(Double.parseDouble(m.group(1)), m.group(2).charAt(0), Double.parseDouble(m.group(3)));
+				for (int i=1; i<=m.groupCount(); i++)
+					System.out.println(m.group(i));
+				if (m.group(2) == null)
+					enviar(Double.parseDouble(m.group(4)), m.group(5).charAt(0));
+				else
+					enviar(Double.parseDouble(m.group(1)), m.group(2).charAt(0), Double.parseDouble(m.group(3)));
 			}
 			else
 				System.out.println("ERROR");
@@ -36,6 +40,20 @@ public class ConsoleClient {
 			out.writeDouble(op1);
 			out.writeChar(operator);
 			out.writeDouble(op2);
+			System.out.println(in.readDouble());
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	static void enviar(double op, char operator) {
+		try (Socket s = new Socket("localhost", 9999);
+				DataOutputStream out = new DataOutputStream(s.getOutputStream());
+				DataInputStream in = new DataInputStream(s.getInputStream())) {
+			out.writeDouble(op);
+			out.writeChar(operator);
 			System.out.println(in.readDouble());
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
