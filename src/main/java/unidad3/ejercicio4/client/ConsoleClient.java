@@ -14,46 +14,31 @@ public class ConsoleClient {
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		Pattern regex = Pattern.compile("^(\\d+(?:\\.\\d+)?)\\s*([+-\u00d7\u00f7])\\s*(\\d+(?:\\.\\d+)?)$|^(\\d+(?:\\.\\d+)?)\\s*(\u221A$)$");
+		Pattern regex = Pattern.compile("^(\\d+(?:\\.\\d+)?)\\s*([+-×÷])\\s*(\\d+(?:\\.\\d+)?)$|^(\\d+(?:\\.\\d+)?)\\s*(√)$");
 		String linea;
-		System.out.print("+-\u00d7\u00f7\u221A> ");
+		System.out.print("+-×÷√> ");
 		while ((linea = in.readLine().trim()) != null) {
 			Matcher m = regex.matcher(linea);
 			if (m.matches()) {
-				for (int i=1; i<=m.groupCount(); i++)
-					System.out.println(m.group(i));
 				if (m.group(2) == null)
-					enviar(Double.parseDouble(m.group(4)), m.group(5).charAt(0));
+					enviar(m.group(4), m.group(5));
 				else
-					enviar(Double.parseDouble(m.group(1)), m.group(2).charAt(0), Double.parseDouble(m.group(3)));
+					enviar(m.group(1), m.group(2), m.group(3));
 			}
 			else
 				System.out.println("ERROR");
-			System.out.print("> ");
+			System.out.print("+-×÷√> ");
 		}
 	}
 	
-	static void enviar(double op1, char operator, double op2) {
+	static void enviar(String... tokens) {
 		try (Socket s = new Socket("localhost", 9999);
 				DataOutputStream out = new DataOutputStream(s.getOutputStream());
 				DataInputStream in = new DataInputStream(s.getInputStream())) {
-			out.writeDouble(op1);
-			out.writeChar(operator);
-			out.writeDouble(op2);
-			System.out.println(in.readDouble());
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	static void enviar(double op, char operator) {
-		try (Socket s = new Socket("localhost", 9999);
-				DataOutputStream out = new DataOutputStream(s.getOutputStream());
-				DataInputStream in = new DataInputStream(s.getInputStream())) {
-			out.writeDouble(op);
-			out.writeChar(operator);
+			out.writeDouble(Double.parseDouble(tokens[0]));
+			out.writeChar(tokens[1].charAt(0));
+			if (tokens.length == 3)
+				out.writeDouble(Double.parseDouble(tokens[2]));
 			System.out.println(in.readDouble());
 		} catch (UnknownHostException e) {
 			e.printStackTrace();

@@ -18,26 +18,30 @@ public class ServiceTask implements Runnable {
 	
 	@Override
 	public void run() {
+		double op1, op2 = 0, result;
+		char operator;
 		try (DataInputStream in = new DataInputStream(socket.getInputStream());
 		     DataOutputStream out = new DataOutputStream(socket.getOutputStream())) {
-			double n = in.readDouble();
-			switch (in.readChar()) {
+			op1 = in.readDouble();
+			switch (operator = in.readChar()) {
 			case '+':
-				out.writeDouble(n + in.readDouble());
+				out.writeDouble(result = op1 + (op2 = in.readDouble()));
 				break;
 			case '-':
-				out.writeDouble(n - in.readDouble());
+				out.writeDouble(result = op1 - (op2 = in.readDouble()));
 				break;
-			case '\u00d7':
-				out.writeDouble(n * in.readDouble());
+			case '×':
+				out.writeDouble(result = op1 * (op2 = in.readDouble()));
 				break;
-			case '\u00f7':
-				out.writeDouble(n / in.readDouble());
+			case '÷':
+				out.writeDouble(result = op1 / (op2 = in.readDouble()));
 				break;
-			case '\u221A':
-				out.writeDouble(Math.sqrt(n));
+			case '√':
+				out.writeDouble(Math.sqrt(op1));
 				break;
 			}
+			System.out.println(socket.getInetAddress());
+			System.out.println(op1 + " " + operator + (operator == '√' ? "" : " " + op2));
 		} catch (SocketTimeoutException e) {
 			System.err.println("TIMEOUT: " + e.getLocalizedMessage() + "(" + socket.getInetAddress() + ")");
 		} catch (IOException e) {
