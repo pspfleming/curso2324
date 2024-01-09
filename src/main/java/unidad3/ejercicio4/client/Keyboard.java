@@ -34,24 +34,24 @@ public class Keyboard extends JPanel {
 		GridBagConstraints constraints = new GridBagConstraints();
 		addKey(display, 0, 0, 4, 1, constraints);
 		addKey(new ClearKey(), 0, 1, 2, 1, constraints);
-		addKey(new UnaryOperatorKey("\u00b1", a -> -a), 2, 1, 1, 1, constraints);
-		addKey(new UnaryOperatorKey("\u221a", a -> Math.sqrt(a)), 3, 1, 1, 1, constraints);
+		addKey(new UnaryOperatorKey('\u00b1'), 2, 1, 1, 1, constraints);
+		addKey(new UnaryOperatorKey('\u221a'), 3, 1, 1, 1, constraints);
 		addKey(new NumberKey("1"), 0, 2, 1, 1, constraints);
 		addKey(new NumberKey("2"), 1, 2, 1, 1, constraints);
 		addKey(new NumberKey("3"), 2, 2, 1, 1, constraints);
-		addKey(new BinaryOperatorKey("\u00f7", (a, b) -> a / b), 3, 2, 1, 1, constraints);
+		addKey(new BinaryOperatorKey('\u00f7'), 3, 2, 1, 1, constraints);
 		addKey(new NumberKey("4"), 0, 3, 1, 1, constraints);
 		addKey(new NumberKey("5"), 1, 3, 1, 1, constraints);
 		addKey(new NumberKey("6"), 2, 3, 1, 1, constraints);
-		addKey(new BinaryOperatorKey("\u00d7", (a, b) -> a * b), 3, 3, 1, 1, constraints);
+		addKey(new BinaryOperatorKey('\u00d7'), 3, 3, 1, 1, constraints);
 		addKey(new NumberKey("7"), 0, 4, 1, 1, constraints);
 		addKey(new NumberKey("8"), 1, 4, 1, 1, constraints);
 		addKey(new NumberKey("9"), 2, 4, 1, 1, constraints);
-		addKey(new BinaryOperatorKey("-", (a, b) -> a - b), 3, 4, 1, 1, constraints);
+		addKey(new BinaryOperatorKey('-'), 3, 4, 1, 1, constraints);
 		addKey(new NumberKey("0"), 0, 5, 1, 1, constraints);
 		addKey(new DecimalKey(), 1, 5, 1, 1, constraints);
-		addKey(new UnaryOperatorKey("=", a -> a), 2, 5, 1, 1, constraints);
-		addKey(new BinaryOperatorKey("+", (a, b) -> {return a + b;}), 3, 5, 1, 1, constraints);
+		addKey(new UnaryOperatorKey('='), 2, 5, 1, 1, constraints);
+		addKey(new BinaryOperatorKey('+'), 3, 5, 1, 1, constraints);
 	}
 
 	private void addKey(JComponent component, int x, int y, int width, int height, GridBagConstraints constraints) {
@@ -125,10 +125,10 @@ public class Keyboard extends JPanel {
 	private class BinaryOperatorKey extends Key {
 
 		private static final long serialVersionUID = 1L;
-		private BinaryOperator<Double> operation;
+		private char operation;
 		
-		public BinaryOperatorKey(String symbol, BinaryOperator<Double> operation) {
-			super(symbol);
+		public BinaryOperatorKey(char operation) {
+			super(String.valueOf(operation));
 			this.operation = operation;
 		}
 		
@@ -141,10 +141,10 @@ public class Keyboard extends JPanel {
 	private class UnaryOperatorKey extends Key {
 
 		private static final long serialVersionUID = 1L;
-		private UnaryOperator<Double> operation;
+		private char operation;
 		
-		public UnaryOperatorKey(String symbol, UnaryOperator<Double> operation) {
-			super(symbol);
+		public UnaryOperatorKey(char operation) {
+			super(String.valueOf(operation));
 			this.operation = operation;
 		}
 		

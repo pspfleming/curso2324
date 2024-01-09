@@ -15,7 +15,7 @@ public class Display extends JTextField {
 	private double saved, current;
 	private boolean clear;
 	private int decimal;
-	private BinaryOperator<Double> binaryOperation;
+	private Character binaryOperation;
 
 	public Display() {
 		super("0", 20);
@@ -51,24 +51,32 @@ public class Display extends JTextField {
 	}
 
 	
-	public void binaryOperation(BinaryOperator<Double> operation) {
+	public void binaryOperation(Character operator) {
 		if (binaryOperation != null) 
-			setText(String.valueOf(current =  binaryOperation.apply(saved, current)));
+			setText(String.valueOf(current = sendBinaryOperationRequest(saved, current, operator)));
 		saved = current;
 		clear = true;
-		binaryOperation = operation;
+		binaryOperation = operator;
 		System.out.printf("saved(%f), current(%f), %s\n", saved, current, binaryOperation);
 	}
 	
-	protected void unaryOperation(UnaryOperator<Double> operation) {
+	public void unaryOperation(Character operator) {
 		if (binaryOperation != null) {
-			current = binaryOperation.apply(saved, current);
+			current = sendBinaryOperationRequest(saved, current, binaryOperation);
 			binaryOperation = null;
 		}
-		setText(String.valueOf(current = operation.apply(current)));
+		setText(String.valueOf(current = sendUnaryOperationRequest(current, operator)));
 		clear = true;
 		
 		System.out.printf("saved(%f), current(%f), %s\n", saved, current, binaryOperation);
+	}
+	
+	private double sendBinaryOperationRequest(double op1, double op2, char operator) {
+		
+	}
+	
+	private double sendUnaryOperationRequest(double op1, char operator) {
+		
 	}
 	
 	public void update(int digit) {
