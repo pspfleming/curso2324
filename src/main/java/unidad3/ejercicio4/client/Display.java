@@ -2,9 +2,10 @@ package unidad3.ejercicio4.client;
 
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.function.BinaryOperator;
-import java.util.function.UnaryOperator;
+import java.net.Socket;
 
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
@@ -52,31 +53,59 @@ public class Display extends JTextField {
 
 	
 	public void binaryOperation(Character operator) {
-		if (binaryOperation != null) 
-			setText(String.valueOf(current = sendBinaryOperationRequest(saved, current, operator)));
-		saved = current;
-		clear = true;
-		binaryOperation = operator;
-		System.out.printf("saved(%f), current(%f), %s\n", saved, current, binaryOperation);
+		try {
+			if (binaryOperation != null) 
+				setText(String.valueOf(current = sendBinaryOperationRequest(saved, current, operator)));
+			saved = current;
+			clear = true;
+			binaryOperation = operator;
+		} catch (IOException e) {
+			e.printStackTrace();
+			setText("server error");
+		}
 	}
 	
 	public void unaryOperation(Character operator) {
-		if (binaryOperation != null) {
-			current = sendBinaryOperationRequest(saved, current, binaryOperation);
-			binaryOperation = null;
+		try {
+			if (binaryOperation != null) {
+				current = sendBinaryOperationRequest(saved, current, binaryOperation);
+				binaryOperation = null;
+			}
+			if (operator == '=')
+				setText(String.valueOf(current));
+			else
+				setText(String.valueOf(current = sendUnaryOperationRequest(current, operator)));
+			clear = true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			setText("server error");
 		}
-		setText(String.valueOf(current = sendUnaryOperationRequest(current, operator)));
-		clear = true;
-		
-		System.out.printf("saved(%f), current(%f), %s\n", saved, current, binaryOperation);
-	}
-	
-	private double sendBinaryOperationRequest(double op1, double op2, char operator) {
 		
 	}
 	
-	private double sendUnaryOperationRequest(double op1, char operator) {
-		
+	private double sendBinaryOperationRequest(double op1, double op2, char operator) throws IOException {
+		Socket socket = new Socket("localhost", 9999);
+		try (
+			DataInputStream in = new DataInputStream(socket.getInputStream());
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+		) {
+			out.writeDouble(op1);
+			out.writeChar(operator);
+			out.writeDouble(op2);
+			return in.readDouble(); 
+		}	
+	}
+	
+	private double sendUnaryOperationRequest(double op1, char operator) throws IOException {
+		Socket socket = new Socket("localhost", 9999);
+		try (
+			DataInputStream in = new DataInputStream(socket.getInputStream());
+			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+		) {
+			out.writeDouble(op1);
+			out.writeChar(operator);
+			return in.readDouble();
+		}
 	}
 	
 	public void update(int digit) {

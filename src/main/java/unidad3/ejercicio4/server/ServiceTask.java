@@ -12,13 +12,13 @@ public class ServiceTask implements Runnable {
 	Socket socket;
 	
 	public ServiceTask(Socket socket) throws SocketException {
-		socket.setSoTimeout(3000);
+//		socket.setSoTimeout(3000);
 		this.socket = socket;
 	}
 	
 	@Override
 	public void run() {
-		double op1, op2 = 0, result;
+		double op1, op2 = 0, result = 0;
 		char operator;
 		try (DataInputStream in = new DataInputStream(socket.getInputStream());
 		     DataOutputStream out = new DataOutputStream(socket.getOutputStream())) {
@@ -37,15 +37,15 @@ public class ServiceTask implements Runnable {
 				out.writeDouble(result = op1 / (op2 = in.readDouble()));
 				break;
 			case '√':
-				out.writeDouble(Math.sqrt(op1));
+				out.writeDouble(result = Math.sqrt(op1));
 				break;
 			}
 			System.out.println(socket.getInetAddress());
-			System.out.println(op1 + " " + operator + (operator == '√' ? "" : " " + op2));
+			System.out.println(op1 + " " + operator + (operator == '√' ? "" : " " + op2) + " = " + result);
 		} catch (SocketTimeoutException e) {
-			System.err.println("TIMEOUT: " + e.getLocalizedMessage() + "(" + socket.getInetAddress() + ")");
+			System.err.println("TIMEOUT: " + e.getLocalizedMessage() + " (" + socket.getInetAddress() + ")");
 		} catch (IOException e) {
-			System.err.println("ERROR: " + e.getLocalizedMessage() + "(" + socket.getInetAddress() + ")");
+			System.err.println("ERROR: " + e.getLocalizedMessage() + " (" + socket.getInetAddress() + ")");
 		}
 	}
 
