@@ -26,9 +26,9 @@ public class CifradoFicheros {
 		char [] password = "practicas".toCharArray();
 		ks.load(new FileInputStream("C:/cygwin64/home/Julio/certs/keystore.p12"), password);
 		PrivateKey privKey = (PrivateKey) ks.getKey("julio", "practicas".toCharArray());
-		Certificate miCert = ks.getCertificate("julio");
 		PublicKey pubKey = (PublicKey) ks.getCertificate("julio").getPublicKey();
 		cifrar(System.getProperty("user.home") + "\\Documents\\OpenSSL.pdf", pubKey);
+		descifrar(System.getProperty("user.home") + "\\Documents\\OpenSSL.pdf.cifrado", privKey);
 	}
 	
 //	static public void cifrar(String path, Key key) {
@@ -55,17 +55,16 @@ public class CifradoFicheros {
 	static public void cifrar(String path, Key key) {
 		Cipher cipher;
 		try {
-			cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.ENCRYPT_MODE, key);
+			System.out.println(cipher.getBlockSize());
 			try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(path));
 					BufferedOutputStream out = new BufferedOutputStream(
 							new FileOutputStream(new File(path + ".cifrado")))) {
 				byte[] bloque = new byte[501];
 				int n;
-				while ((n = in.read(bloque)) != -1) {
-						out.write(cipher.doFinal(bloque, 0, n));
-				}
-				
+				while ((n = in.read(bloque)) != -1)
+					out.write(cipher.doFinal(bloque, 0, n));
 			} catch (IOException | IllegalBlockSizeException | BadPaddingException e) {
 				e.printStackTrace();
 			}
@@ -73,5 +72,28 @@ public class CifradoFicheros {
 			e.printStackTrace();
 		}
 	}
+	
+	static public void descifrar(String path, Key key) {
+		Cipher cipher;
+		try {
+			cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			cipher.init(Cipher.DECRYPT_MODE, key);
+			System.out.println(cipher.getBlockSize());
+			try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(path));
+					BufferedOutputStream out = new BufferedOutputStream(
+							new FileOutputStream(new File(path + ".pdf")))) {
+				byte[] bloque = new byte[512];
+				int n;
+				while ((n = in.read(bloque)) != -1)
+					out.write(cipher.doFinal(bloque, 0, n));
+			} catch (IOException | IllegalBlockSizeException | BadPaddingException e) {
+				e.printStackTrace();
+			}
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 
 }
